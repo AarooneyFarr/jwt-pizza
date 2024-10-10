@@ -248,6 +248,31 @@ test('register exists already test', async ({ page }) => {
 })
 
 test('register and not found test', async ({ page }) => {
+	await page.route('*/**/api/auth', async (route) => {
+		if (route.request().method() == 'DELETE') {
+			const loginRes = {
+				message: 'logout successful',
+			}
+			await route.fulfill({ json: loginRes })
+		}
+		if (route.request().method() == 'POST') {
+			const loginRes = {
+				user: {
+					name: 'asd',
+					email: 'ads@gmail.com',
+					roles: [
+						{
+							role: 'diner',
+						},
+					],
+					id: 151,
+				},
+				token:
+					'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYXNkIiwiZW1haWwiOiJhZHNAZ21haWwuY29tIiwicm9sZXMiOlt7InJvbGUiOiJkaW5lciJ9XSwiaWQiOjE1MSwiaWF0IjoxNzI4NTk3OTkzfQ.PRTKuygPLTloMxyQ_dqO4NLGK_aOpiR-RavyaO-yZ6k',
+			}
+			await route.fulfill({ json: loginRes })
+		}
+	})
 	await page.goto('http://localhost:5173/docs2')
 	await expect(page.getByRole('main')).toContainText(
 		'It looks like we have dropped a pizza on the floor. Please try another page.'
