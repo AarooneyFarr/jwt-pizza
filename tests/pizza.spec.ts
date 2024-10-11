@@ -208,6 +208,26 @@ test('docs test', async ({ page }) => {
 })
 
 test('diner dash test', async ({ page }) => {
+	await page.route('*/**/api/auth', async (route) => {
+		if (route.request().method() == 'POST') {
+			const loginRes = {
+				user: {
+					name: 'sd',
+					email: 'ads@gmail.com',
+					roles: [
+						{
+							role: 'diner',
+						},
+					],
+					id: 151,
+				},
+				token:
+					'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYXNkIiwiZW1haWwiOiJhZHNAZ21haWwuY29tIiwicm9sZXMiOlt7InJvbGUiOiJkaW5lciJ9XSwiaWQiOjE1MSwiaWF0IjoxNzI4NTk3OTkzfQ.PRTKuygPLTloMxyQ_dqO4NLGK_aOpiR-RavyaO-yZ6k',
+			}
+			await route.fulfill({ json: loginRes })
+		}
+	})
+
 	await page.goto('http://localhost:5173')
 	await page.getByRole('link', { name: 'Register' }).click()
 	await page.getByPlaceholder('Full name').fill('sd')
@@ -223,6 +243,86 @@ test('diner dash test', async ({ page }) => {
 })
 
 test('register exists already test', async ({ page }) => {
+	await page.route('*/**/api/auth', async (route) => {
+		if (route.request().method() == 'DELETE') {
+			const loginRes = {
+				message: 'logout successful',
+			}
+			await route.fulfill({ json: loginRes })
+		}
+		if (route.request().method() == 'POST' || route.request().method() == 'PUT') {
+			const loginRes = {
+				user: {
+					name: 'a',
+					email: 'a@jwt.com',
+					roles: [
+						{
+							role: 'diner',
+						},
+						{
+							role: 'franchisee',
+							objectId: 58,
+						},
+					],
+					id: 151,
+				},
+				token:
+					'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYXNkIiwiZW1haWwiOiJhZHNAZ21haWwuY29tIiwicm9sZXMiOlt7InJvbGUiOiJkaW5lciJ9XSwiaWQiOjE1MSwiaWF0IjoxNzI4NTk3OTkzfQ.PRTKuygPLTloMxyQ_dqO4NLGK_aOpiR-RavyaO-yZ6k',
+			}
+			await route.fulfill({ json: loginRes })
+		}
+	})
+	let res = 0
+	await page.route('*/**/api/franchise/151', async (route) => {
+		const franchiseRes = [
+			{
+				id: 58,
+				name: 'Bropkyasd',
+				admins: [
+					{
+						id: 151,
+						name: 'a',
+						email: 'a@jwt.com',
+					},
+				],
+				stores: [],
+			},
+		]
+		const franchiseResOne = [
+			{
+				id: 58,
+				name: 'Bropkyasd',
+				admins: [
+					{
+						id: 1,
+						name: 'a',
+						email: 'a@jwt.com',
+					},
+				],
+				stores: [
+					{
+						id: 28,
+						name: 'borke',
+						totalRevenue: 0,
+					},
+				],
+			},
+		]
+		expect(route.request().method()).toBe('GET')
+		await route.fulfill({ json: res == 0 ? franchiseRes : franchiseResOne })
+		res++
+	})
+	await page.route('*/**/api/franchise/58/store', async (route) => {
+		const franchiseRes = {
+			id: 1,
+			franchiseId: 1,
+			name: 'SLC',
+		}
+
+		expect(route.request().method()).toBe('POST')
+		await route.fulfill({ json: franchiseRes })
+	})
+
 	await page.goto('http://localhost:5173')
 	await page.getByRole('link', { name: 'Register' }).click()
 	await page.getByPlaceholder('Full name').fill('test')
@@ -231,14 +331,9 @@ test('register exists already test', async ({ page }) => {
 	await page.getByPlaceholder('Password').click()
 	await page.getByPlaceholder('Password').fill('admin')
 	await page.getByRole('button', { name: 'Register' }).click()
-	await page.getByRole('link', { name: 't', exact: true }).click()
+	await page.getByRole('link', { name: 'a', exact: true }).click()
 	await page.getByLabel('Global').getByRole('link', { name: 'Franchise' }).click()
-	await expect(page.getByRole('main')).toContainText('So you want a piece of the pie?')
-	await page.getByRole('link', { name: 'login' }).click()
-	await page.getByPlaceholder('Email address').fill('a@jwt.com')
-	await page.getByPlaceholder('Password').click()
-	await page.getByPlaceholder('Password').fill('admin')
-	await page.getByRole('button', { name: 'Login' }).click()
+
 	await page.getByRole('button', { name: 'Create store' }).click()
 	await page.getByPlaceholder('store name').click()
 	await page.getByPlaceholder('store name').fill('borke')
