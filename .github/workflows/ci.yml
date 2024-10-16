@@ -55,6 +55,8 @@ jobs:
 
   deploy-s3:
     needs: build
+    permissions:
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Create OIDC token to AWS
@@ -67,8 +69,8 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: dist
-          path: dist
+          name: package
+          path: dist/
 
       - name: Push to AWS S3
         run: |
