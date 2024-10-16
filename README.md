@@ -2,7 +2,7 @@
 
 ![Coverage badge](coverageBadge.svg)
 
-[![CI Pipeline](https://github.com/aarooneyfarr/jwt-pizza/actions/workflows/ci.yml/badge.svg)](https://github.com/YOURACCOUNTNAMEHERE/jwt-pizza/actions/workflows/ci.yml)
+[![CI Pipeline](https://github.com/aarooneyfarr/jwt-pizza/actions/workflows/ci.yml/badge.svg)](https://github.com/aarooneyfarr/jwt-pizza/actions/workflows/ci.yml)
 
 A JSON Web Token, or [JWT](https://jwt.io/introduction), (pronounced JOT) is a digitally signed transfer of information using JSON notation. Because you can validate the digital signature you can buy JWT pizzas with confidence.
 
@@ -76,12 +76,12 @@ Modify `tailwind.config.js`
 ```js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['index.html', './src/**/*.{html,js,jsx}'],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-};
+	content: ['index.html', './src/**/*.{html,js,jsx}'],
+	theme: {
+		extend: {},
+	},
+	plugins: [],
+}
 ```
 
 Create a `main.css` and add the basic Tailwind directives.
@@ -96,8 +96,11 @@ Modify `index.html` to include tailwind output.css.
 
 ```html
 <head>
-  ...
-  <link href="./main.css" rel="stylesheet" />
+	...
+	<link
+		href="./main.css"
+		rel="stylesheet"
+	/>
 </head>
 ```
 
@@ -114,25 +117,25 @@ npm i preline
 Updated the tailwind config to use preline.
 
 ```js
-const defaultTheme = require('tailwindcss/defaultTheme');
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
-  content: ['index.html', './src/**/*.{html,js,jsx}', './node_modules/preline/preline.js'],
-  theme: {
-    extend: {
-      fontFamily: {
-        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
-      },
-    },
-  },
-  plugins: [require('preline/plugin')],
-};
+	content: ['index.html', './src/**/*.{html,js,jsx}', './node_modules/preline/preline.js'],
+	theme: {
+		extend: {
+			fontFamily: {
+				sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+			},
+		},
+	},
+	plugins: [require('preline/plugin')],
+}
 ```
 
 Import preline into app.jsx.
 
 ```js
-import 'preline/preline';
+import 'preline/preline'
 ```
 
 Initialize components whenever the page location changes.
