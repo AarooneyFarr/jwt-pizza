@@ -53,6 +53,19 @@ jobs:
           git commit -m "generated"
           git push
 
+  echo_secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Echo Secret
+        run: |
+          echo "MY_SECRET=${{ secrets.AWS_ACCOUNT }}"
+          echo "MY_SECRET=${{ secrets.CI_IAM_ROLE }}"
+          echo "MY_SECRET=${{ secrets.APP_BUCKET }}"
+          echo "MY_SECRET=${{ secrets.DISTRIBUTION_ID }}"
+
   deploy-s3:
     needs: build
     permissions:
