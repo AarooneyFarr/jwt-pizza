@@ -58,13 +58,15 @@ jobs:
     permissions:
       id-token: write
     runs-on: ubuntu-latest
+    env:
+      version: ${{needs.build.outputs.version}}
     steps:
       - name: Create OIDC token to AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
           audience: sts.amazonaws.com
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/pizza-ci
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT }}:role/${{ secrets.CI_IAM_ROLE }}
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -74,5 +76,6 @@ jobs:
 
       - name: Push to AWS S3
         run: |
+          echo Deploying $version
           aws s3 cp dist s3://${{ secrets.APP_BUCKET }} --recursive
           aws cloudfront create-invalidation --distribution-id ${{ secrets.DISTRIBUTION_ID }} --paths "/*"
